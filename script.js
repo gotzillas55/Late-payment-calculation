@@ -1,7 +1,7 @@
 // --- Date Picker Setup ---
 flatpickr("#endDate", {
     dateFormat: "d/m/Y",
-    disableMobile: "true" // ใช้ Native picker บนมือถือเพื่อให้ใช้ง่ายขึ้น
+    disableMobile: "true"
 });
 flatpickr("#today", {
     dateFormat: "d/m/Y",
@@ -9,6 +9,7 @@ flatpickr("#today", {
     disableMobile: "true"
 });
 
+// --- Format Number with Commas ---
 function formatNumber(num) {
     return Number(num).toLocaleString("en-US", {
         minimumFractionDigits: 2,
@@ -16,6 +17,7 @@ function formatNumber(num) {
     });
 }
 
+// Convert dd/mm/yyyy -> JS Date
 function parseDate(str) {
     const [d, m, y] = str.split("/");
     return new Date(`${y}-${m}-${d}`);
@@ -25,12 +27,12 @@ function calculateLateFee() {
     const amount = Number(document.getElementById("amount").value);
     const endDateStr = document.getElementById("endDate").value;
     const todayStr = document.getElementById("today").value;
-
+    
     const endDate = parseDate(endDateStr);
     const today = parseDate(todayStr);
 
     if (!amount || !endDateStr || !todayStr) {
-        alert("Please input all informations");
+        alert("Please fill in all required fields.");
         return;
     }
 
@@ -54,13 +56,15 @@ function calculateLateFee() {
     periodStart.setDate(periodStart.getDate() + 1);
 
     let totalInterest = 0;
+    
+    // Create Breakdown Table (English Headers)
     let breakdownHTML = `
-        <h3>📋 Period informations (Breakdown)</h3>
+        <h3>📋 Calculation Breakdown</h3>
         <table>
             <thead>
                 <tr>
-                    <th>Periods</th>
-                    <th>Amount</th>
+                    <th>Period</th>
+                    <th>Accumulated</th>
                     <th>Days</th>
                     <th>Interest</th>
                 </tr>
@@ -85,7 +89,7 @@ function calculateLateFee() {
             <tr>
                 <td>${i}</td>
                 <td>${formatNumber(accAmount)}</td>
-                <td>${days} Days</td>
+                <td>${days}</td>
                 <td>${formatNumber(fee)}</td>
             </tr>
         `;
@@ -97,7 +101,7 @@ function calculateLateFee() {
     breakdownHTML += "</tbody></table>";
     document.getElementById("breakdown").innerHTML = breakdownHTML;
 
-    // Follow up fee
+    // --- Follow up fee calculation ---
     const followFirst = 50;
     const followNext = 100;
     const followTotal = followFirst + (months - 1) * followNext;
@@ -106,30 +110,32 @@ function calculateLateFee() {
     const totalLate = totalInterest + followTotal;
     const totalDue = accumulated + totalLate;
 
-    // --- Updated Summary HTML Structure ---
+    // --- Summary Section (English) ---
     let summary = `
         <h3>💰 Summary</h3>
         
         <div class="summary-row">
-            <span>Monthly rate (${months} Months)</span>
-            <span>${formatNumber(accumulated)} Baht</span>
+            <span>Overdue Rent (${months} months)</span>
+            <span>${formatNumber(accumulated)} THB</span>
         </div>
+        
         <div class="summary-row">
-            <span>Follow-up fee</span>
-            <span>${formatNumber(followTotal)} Baht</span>
+            <span>Collection Fee</span>
+            <span>${formatNumber(followTotal)} THB</span>
         </div>
+
         <div class="summary-row">
-            <span>Interest fee</span>
-            <span>${formatNumber(totalInterest)} Baht</span>
+            <span>Late Interest Fee</span>
+            <span>${formatNumber(totalInterest)} THB</span>
         </div>
 
         <div class="summary-total">
-            <span>Total amount</span>
-            <span>${formatNumber(totalDue)} Baht</span>
+            <span>Total Amount Due</span>
+            <span>${formatNumber(totalDue)} THB</span>
         </div>
     `;
 
     const resultDiv = document.getElementById("result");
     resultDiv.innerHTML = summary;
-    resultDiv.classList.remove("hidden"); // แสดงผลเมื่อคำนวณเสร็จ
+    resultDiv.classList.remove("hidden");
 }
