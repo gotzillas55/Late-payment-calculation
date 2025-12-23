@@ -2,10 +2,14 @@
 flatpickr("#endDate", {
     dateFormat: "d/m/Y",
     disableMobile: "true"
+    monthSelectorType: "static",
+    yearSelectorType: "dropdown"
 });
 flatpickr("#today", {
     dateFormat: "d/m/Y",
     defaultDate: "today",
+    monthSelectorType: "static",
+    yearSelectorType: "dropdown"
     disableMobile: "true"
 });
 
